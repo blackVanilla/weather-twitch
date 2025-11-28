@@ -1,0 +1,20 @@
+# Зависимости
+node_modules/
+package-lock.json
+
+# Конфигурация с чувствительными данными
+config.json
+
+# Логи
+*.log
+logs/
+
+# Временные файлы
+*.tmp
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo

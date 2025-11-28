@@ -1,0 +1,17 @@
+{
+  "botUsername": "your_bot_username",
+  "oauth": "oauth:your_oauth_token_here",
+  "weatherApiKey": "your_openweathermap_api_key",
+  "channels": [
+    {
+      "name": "channel_name_1",
+      "defaultCity": "Москва",
+      "cooldown": 15
+    },
+    {
+      "name": "channel_name_2",
+      "defaultCity": "Санкт-Петербург",
+      "cooldown": 30
+    }
+  ]
+}

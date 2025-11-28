@@ -1,0 +1,25 @@
+{
+  "name": "twitch-weather-bot",
+  "version": "1.0.0",
+  "description": "Twitch бот для показа погоды с использованием OpenWeatherMap API",
+  "main": "bot.js",
+  "scripts": {
+    "start": "node bot.js",
+    "dev": "nodemon bot.js"
+  },
+  "keywords": [
+    "twitch",
+    "bot",
+    "weather",
+    "openweathermap"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "tmi.js": "^1.8.5",
+    "axios": "^1.6.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  }
+}
