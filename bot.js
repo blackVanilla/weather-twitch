@@ -62,7 +62,7 @@ async function getWeather(cityName) {
     });
 
     const data = weatherResponse.data;
-    
+
     // Форматируем направление ветра
     const getWindDirection = (degrees) => {
       const directions = [
@@ -83,22 +83,22 @@ async function getWeather(cityName) {
     const getWeatherEmoji = (conditionId) => {
       // Thunderstorm (2xx)
       if (conditionId >= 200 && conditionId < 300) return '⛈️';
-      
+
       // Drizzle (3xx)
       if (conditionId >= 300 && conditionId < 400) return '🌦️';
-      
+
       // Rain (5xx)
       if (conditionId >= 500 && conditionId < 600) {
         if (conditionId === 511) return '🧊'; // Freezing rain
         return '🌧️';
       }
-      
+
       // Snow (6xx)
       if (conditionId >= 600 && conditionId < 700) {
         if (conditionId === 611 || conditionId === 612 || conditionId === 613) return '🌨️'; // Sleet
         return '❄️';
       }
-      
+
       // Atmosphere (7xx)
       if (conditionId >= 700 && conditionId < 800) {
         if (conditionId === 701 || conditionId === 741) return '🌫️'; // Mist, Fog
@@ -110,16 +110,16 @@ async function getWeather(cityName) {
         if (conditionId === 781) return '🌪️'; // Tornado
         return '🌫️';
       }
-      
+
       // Clear (800)
       if (conditionId === 800) return '☀️';
-      
+
       // Clouds (80x)
       if (conditionId === 801) return '🌤️'; // Few clouds: 11-25%
       if (conditionId === 802) return '⛅'; // Scattered clouds: 25-50%
       if (conditionId === 803) return '🌥️'; // Broken clouds: 51-84%
       if (conditionId === 804) return '☁️'; // Overcast clouds: 85-100%
-      
+
       return '🌡️'; // По умолчанию
     };
 
@@ -143,11 +143,11 @@ async function getWeather(cityName) {
 
     // Первое условие - основное
     const primaryWeather = weatherConditions[0];
-    
+
     // Если есть дополнительные условия, объединяем их
     let weatherText = primaryWeather.description;
     let weatherEmojis = primaryWeather.emoji;
-    
+
     if (weatherConditions.length > 1) {
       // Добавляем дополнительные условия
       for (let i = 1; i < weatherConditions.length; i++) {
@@ -187,15 +187,15 @@ function formatWeatherMessage(weather) {
     return weather.error;
   }
 
-  const locationName = weather.countryFlag 
-    ? `${weather.city}, ${weather.country} ${weather.countryFlag}` 
+  const locationName = weather.countryFlag
+    ? `${weather.city}, ${weather.country} ${weather.countryFlag}`
     : `${weather.city}, ${weather.country}`;
 
   let message = `${locationName}: ${weather.condition} ${weather.weatherEmoji}, ${weather.temp}°C (ощущается как ${weather.feelsLike}°C). ` +
-                `Влажность: ${weather.humidity}% 💧. ` +
-                `Ветер ${weather.windDirection.name}: ${weather.windSpeed} м/с ${weather.windDirection.emoji}. ` +
-                `Облачность: ${weather.cloudiness}% ☁️. ` +
-                `Давление: ${weather.pressure} мм рт.ст. 🌡️`;
+    `Влажность: ${weather.humidity}% 💧. ` +
+    `Ветер ${weather.windDirection.name}: ${weather.windSpeed} м/с ${weather.windDirection.emoji}. ` +
+    `Облачность: ${weather.cloudiness}% ☁️. ` +
+    `Давление: ${weather.pressure} мм рт.ст. 🌡️`;
 
   if (weather.warnings.length > 0) {
     message += ` ⚠️ Предупреждения: ${weather.warnings.join(', ')}`;
@@ -206,9 +206,9 @@ function formatWeatherMessage(weather) {
 
 // Проверка прав пользователя (модератор или владелец канала)
 function isModerator(userstate) {
-  return userstate.mod || 
-         userstate.badges?.broadcaster === '1' || 
-         userstate['user-type'] === 'mod';
+  return userstate.mod ||
+    userstate.badges?.broadcaster === '1' ||
+    userstate['user-type'] === 'mod';
 }
 
 // Получение emoji флага по коду страны (ISO 3166-1 alpha-2)
@@ -216,14 +216,14 @@ function getCountryFlag(countryCode) {
   if (!countryCode || countryCode.length !== 2) {
     return '';
   }
-  
+
   // Конвертируем код страны в emoji флаг
   // Каждая буква кода преобразуется в региональный индикатор
   const codePoints = countryCode
     .toUpperCase()
     .split('')
     .map(char => 127397 + char.charCodeAt(0));
-  
+
   return String.fromCodePoint(...codePoints);
 }
 
@@ -232,11 +232,11 @@ function isOnCooldown(channel, username, cooldownSeconds) {
   const key = `${channel}:${username}`;
   const now = Date.now();
   const lastUsed = userCooldowns.get(key);
-  
+
   if (!lastUsed) {
     return false;
   }
-  
+
   const timePassed = (now - lastUsed) / 1000; // в секундах
   return timePassed < cooldownSeconds;
 }
@@ -246,11 +246,11 @@ function getRemainingCooldown(channel, username, cooldownSeconds) {
   const key = `${channel}:${username}`;
   const now = Date.now();
   const lastUsed = userCooldowns.get(key);
-  
+
   if (!lastUsed) {
     return 0;
   }
-  
+
   const timePassed = (now - lastUsed) / 1000;
   const remaining = cooldownSeconds - timePassed;
   return Math.ceil(remaining);
@@ -267,6 +267,10 @@ async function startBot() {
 
   const client = new tmi.Client({
     options: { debug: false },
+    connection: {
+      secure: true,
+      reconnect: true
+    },
     identity: {
       username: config.botUsername,
       password: config.oauth
@@ -286,7 +290,7 @@ async function startBot() {
 
     const channelName = channel.replace('#', '');
     const channelConfig = config.channels.find(ch => ch.name === channelName);
-    
+
     if (!channelConfig) return;
 
     // Обработка команды !погода
@@ -297,18 +301,18 @@ async function startBot() {
       if (args.toLowerCase() === 'помощь' || args.toLowerCase() === 'help') {
         const cooldownTime = channelConfig.cooldown !== undefined ? channelConfig.cooldown : 15;
         const defaultCity = channelConfig.defaultCity || 'Москва';
-        
+
         let helpMessage = `📖 Команды: ` +
-                         `!погода - погода в ${defaultCity} (город по умолчанию) | ` +
-                         `!погода <город> - погода в указанном городе`;
-        
+          `!погода - погода в ${defaultCity} (город по умолчанию) | ` +
+          `!погода <город> - погода в указанном городе`;
+
         if (isModerator(userstate)) {
           helpMessage += ` | !погода установить <город> - изменить город по умолчанию | ` +
-                        `!погода таймаут <секунды> - установить тайм-аут команды (сейчас: ${cooldownTime} сек)`;
+            `!погода таймаут <секунды> - установить тайм-аут команды (сейчас: ${cooldownTime} сек)`;
         } else {
           helpMessage += ` | ⏱️ Тайм-аут: ${cooldownTime} сек`;
         }
-        
+
         client.say(channel, `@${userstate.username}, ${helpMessage}`);
         return;
       }
@@ -328,7 +332,7 @@ async function startBot() {
 
         channelConfig.cooldown = timeoutValue;
         await saveConfig();
-        
+
         client.say(channel, `@${userstate.username}, тайм-аут команды установлен на ${timeoutValue} секунд ✓`);
         return;
       }
@@ -356,9 +360,9 @@ async function startBot() {
         // Сохраняем новый город по умолчанию
         channelConfig.defaultCity = weather.city;
         await saveConfig();
-        
-        const locationName = weather.countryFlag 
-          ? `${weather.city}, ${weather.country} ${weather.countryFlag}` 
+
+        const locationName = weather.countryFlag
+          ? `${weather.city}, ${weather.country} ${weather.countryFlag}`
           : `${weather.city}, ${weather.country}`;
         client.say(channel, `@${userstate.username}, город по умолчанию изменён на ${locationName} ✓`);
         return;
@@ -366,7 +370,7 @@ async function startBot() {
 
       // Проверка тайм-аута (не применяется к модераторам)
       const cooldownTime = channelConfig.cooldown !== undefined ? channelConfig.cooldown : 15;
-      
+
       if (!isModerator(userstate) && isOnCooldown(channelName, userstate.username, cooldownTime)) {
         const remaining = getRemainingCooldown(channelName, userstate.username, cooldownTime);
         client.say(channel, `@${userstate.username}, команда доступна через ${remaining} сек.`);
@@ -375,12 +379,12 @@ async function startBot() {
 
       // !погода <город> или просто !погода
       const cityToCheck = args || channelConfig.defaultCity || 'Москва';
-      
+
       const weather = await getWeather(cityToCheck);
       const weatherMessage = formatWeatherMessage(weather);
-      
+
       client.say(channel, `@${userstate.username}, ${weatherMessage}`);
-      
+
       // Устанавливаем тайм-аут для пользователя (не для модераторов)
       if (!isModerator(userstate)) {
         setCooldown(channelName, userstate.username);
